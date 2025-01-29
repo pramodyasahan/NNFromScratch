@@ -1,5 +1,7 @@
 import numpy as np
 
+from src.utils.activations import ActivationFunctions
+
 
 class DenseLayer:
     def __init__(self, input_size: int, output_size: int) -> None:
@@ -25,3 +27,27 @@ class DenseLayer:
 
         dX = np.dot(dZ, self.weights.T)
         return dW, db, dX
+
+
+class ActivationLayer:
+    def __init__(self, activation_type: str) -> None:
+        """Initialize activation function based on type."""
+        if activation_type == "relu":
+            self.activation = ActivationFunctions.relu
+            self.derivative = ActivationFunctions.relu_derivative
+        elif activation_type == "softmax":
+            self.activation = ActivationFunctions.softmax
+            self.derivative = None  # Softmax derivative is handled in loss function
+        else:
+            raise ValueError(f"Unsupported activation type: {activation_type}")
+
+    def forward(self, Z: np.ndarray) -> np.ndarray:
+        """Apply activation function."""
+        return self.activation(Z)
+
+    def backward(self, dA: np.ndarray) -> np.ndarray:
+        """Compute derivative of activation function."""
+        if self.derivative:
+            return self.derivative(dA)
+        else:
+            raise ValueError("Softmax derivative is handled in the loss function.")
