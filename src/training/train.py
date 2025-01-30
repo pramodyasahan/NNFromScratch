@@ -1,4 +1,5 @@
-from src.training.loss import CrossEntropyLoss
+import torch
+from training.loss import CrossEntropyLoss
 
 
 class Trainer:
@@ -12,27 +13,39 @@ class Trainer:
 
     def train(self):
         """Train the neural network model."""
-        X_train, Y_train = self.dataset.get_train_data()
-        X_test, Y_test = self.dataset.get_test_data()
+        train_loader = self.dataset.get_train_data()  # ✅ Correct way to get DataLoader
+        test_loader = self.dataset.get_test_data()
 
         for epoch in range(self.epochs):
-            # Forward pass
-            predictions = self.model.forward(X_train)
+            total_loss = 0
+            correct = 0
+            total_samples = 0
 
-            # Compute loss
-            loss = self.loss_fn.compute_loss(predictions, Y_train)
+            for X_batch, Y_batch in train_loader:  # ✅ Looping through mini-batches
+                X_batch, Y_batch = X_batch.view(X_batch.shape[0], -1), F.one_hot(Y_batch, num_classes=10).float()
 
-            # Backward pass
-            self.model.backward(predictions, Y_train)
+                # Forward pass
+                predictions = self.model.forward(X_batch)
 
-            # Update weights using optimizer
-            self.model.update_weights(self.optimizer)
+                # Compute loss
+                loss = self.loss_fn.compute_loss(predictions, Y_batch)
+                total_loss += loss
 
-            # Evaluate on test set
-            test_predictions = self.model.forward(X_test)
-            test_accuracy = Metrics.accuracy(test_predictions, Y_test)
+                # Compute accuracy
+                correct += (torch.argmax(predictions, dim=1) == torch.argmax(Y_batch, dim=1)).sum().item()
+                total_samples += Y_batch.shape[0]
+
+                # Backward pass
+                self.model.backward(predictions, Y_batch)
+
+                # Update weights using optimizer
+                self.model.update_weights(self.optimizer)
+
+            # Compute epoch loss and accuracy
+            avg_loss = total_loss / len(train_loader)
+            train_accuracy = correct / total_samples
 
             # Print progress
-            print(f"Epoch {epoch+1}/{self.epochs} - Loss: {loss:.4f} - Test Accuracy: {test_accuracy:.4f}")
+            print(f"Epoch {epoch + 1}/{self.epochs} - Loss: {avg_loss:.4f} - Train Accuracy: {train_accuracy:.4f}")
 
         print("Training complete!")
