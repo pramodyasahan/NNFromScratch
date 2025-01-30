@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from src.training.loss import CrossEntropyLoss
+from training.loss import CrossEntropyLoss
 
 
 class Trainer:
