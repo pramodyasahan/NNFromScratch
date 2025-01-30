@@ -12,11 +12,11 @@ x_train, y_train, x_test, y_test = load_mnist()
 
 # Initialize network and optimizer
 nn = NeuralNetwork()
-optimizer = SGD(learning_rate=0.01)
+optimizer = SGD(learning_rate=0.1)
 
 # Training settings
 epochs = 10
-batch_size = 64
+batch_size = 16
 num_batches = x_train.shape[0] // batch_size
 
 # Store losses and accuracy for plotting
