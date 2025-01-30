@@ -1,32 +1,32 @@
 import numpy as np
-
+import torch
 from utils.activations import ActivationFunctions
 
 
 class DenseLayer:
-    def __init__(self, input_size: int, output_size: int) -> None:
-        """Initialize weights and biases"""
-        self.Z = None
-        self.input = None
+    def __init__(self, input_size: int, output_size: int):
+        """Initialize weights and biases on CPU"""
         self.input_size = input_size
         self.output_size = output_size
 
-        self.weights = np.random.randn(input_size, output_size) * 0.01
-        self.biases = np.zeros((1, output_size))
+        self.weights = torch.randn(input_size, output_size, dtype=torch.float32) * 0.01
+        self.biases = torch.zeros((1, output_size), dtype=torch.float32)
 
-    def forward(self, X: np.ndarray) -> np.ndarray:
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         """Compute Z = WX + b"""
         self.input = X  # Store input for backpropagation
-        self.Z = np.dot(X, self.weights) + self.biases
+        self.Z = torch.matmul(X, self.weights) + self.biases
         return self.Z
 
-    def backward(self, dZ: np.ndarray) -> tuple:
-        """Compute weight and bias gradients"""
-        dW = np.dot(self.input.T, dZ) / self.input.shape[0]
-        db = np.sum(dZ, axis=0, keepdims=True) / self.input.shape[0]
+    def backward(self, dZ: torch.Tensor) -> tuple:
+        """Compute gradients for weight and bias updates"""
+        batch_size = self.input.shape[0]
 
-        dX = np.dot(dZ, self.weights.T)
-        return dW, db, dX
+        dW = torch.matmul(self.input.T, dZ) / batch_size
+        db = torch.sum(dZ, dim=0, keepdim=True) / batch_size
+
+        dX = torch.matmul(dZ, self.weights.T)  # Gradient w.r.t. input for previous layer
+        return dW, db, dX  # Return computed gradients
 
 
 class ActivationLayer:

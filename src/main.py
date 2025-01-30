@@ -6,10 +6,6 @@ from training.loss import CrossEntropyLoss
 from training.optimizers import SGD
 from training.train import Trainer
 
-# Check for GPU availability
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Using device: {device}")
-
 # Load dataset
 batch_size = 32
 dataset = DatasetLoader(dataset_name="mnist", batch_size=batch_size)
@@ -37,7 +33,7 @@ trainer.train()
 
 # Evaluate the trained model
 X_test, Y_test = dataset.get_test_data()
-X_test, Y_test = X_test.to(device), Y_test.to(device)  # Move to GPU if available
+X_test, Y_test = X_test, Y_test  # Move to GPU if available
 
 with torch.no_grad():  # Disable gradient calculation for inference
     predictions = model.forward(X_test)

@@ -1,8 +1,8 @@
 import numpy as np
-import torch.nn.functional as F
 import torch
+import torch.nn.functional as F
 
-from training.loss import CrossEntropyLoss
+from src.training.loss import CrossEntropyLoss
 
 
 class Trainer:
@@ -15,7 +15,7 @@ class Trainer:
         self.loss_fn = CrossEntropyLoss()
 
     def train(self):
-        """Train the neural network model."""
+        """Train the neural network model (CPU only)"""
         train_loader = self.dataset.get_train_data()
         test_loader = self.dataset.get_test_data()
 
@@ -25,14 +25,14 @@ class Trainer:
             total_samples = 0
 
             for X_batch, Y_batch in train_loader:
-                # Convert X_batch and Y_batch to PyTorch tensors and move to correct device
+                # ✅ Ensure all inputs are PyTorch tensors (on CPU)
                 X_batch = X_batch.view(X_batch.shape[0], -1)  # Flatten images
                 Y_batch = F.one_hot(Y_batch, num_classes=10).float()  # Convert labels to one-hot
 
                 # Forward pass
                 predictions = self.model.forward(X_batch)
 
-                # Ensure predictions and Y_batch are PyTorch tensors
+                # ✅ Ensure predictions and labels are tensors (not NumPy)
                 if isinstance(predictions, np.ndarray):
                     predictions = torch.tensor(predictions, dtype=torch.float32)
 
