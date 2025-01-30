@@ -1,4 +1,4 @@
-import numpy as np
+import torch
 
 
 class CrossEntropyLoss:
@@ -6,11 +6,12 @@ class CrossEntropyLoss:
         """Initialize loss function"""
         self.loss = None
 
-    def compute_loss(self, predictions: np.ndarray, labels: np.ndarray) -> float:
-        """Compute cross-entropy loss"""
-        cross_entropy = -np.sum(labels * np.log(predictions + 1e-8)) / predictions.shape[0]  # Averaged over batch
+    def compute_loss(self, predictions: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+        """Compute cross-entropy loss using PyTorch operations"""
+        batch_size = predictions.shape[0]
+        cross_entropy = -torch.sum(labels * torch.log(predictions + 1e-8)) / batch_size  # Use `torch.sum()`
         return cross_entropy
 
-    def backward(self, predictions: np.ndarray, labels: np.ndarray) -> np.ndarray:
+    def backward(self, predictions: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
         """Compute derivative of cross-entropy loss"""
         return predictions - labels  # dZ = A2 - Y
