@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 from training.loss import CrossEntropyLoss
 
 
@@ -13,7 +14,7 @@ class Trainer:
 
     def train(self):
         """Train the neural network model."""
-        train_loader = self.dataset.get_train_data()  # ✅ Correct way to get DataLoader
+        train_loader = self.dataset.get_train_data()
         test_loader = self.dataset.get_test_data()
 
         for epoch in range(self.epochs):
@@ -21,7 +22,7 @@ class Trainer:
             correct = 0
             total_samples = 0
 
-            for X_batch, Y_batch in train_loader:  # ✅ Looping through mini-batches
+            for X_batch, Y_batch in train_loader:
                 X_batch, Y_batch = X_batch.view(X_batch.shape[0], -1), F.one_hot(Y_batch, num_classes=10).float()
 
                 # Forward pass
