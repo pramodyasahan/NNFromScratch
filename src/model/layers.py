@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.utils.activations import ActivationFunctions
+from utils.activations import ActivationFunctions
 
 
 class DenseLayer:

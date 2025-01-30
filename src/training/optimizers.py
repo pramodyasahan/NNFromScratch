@@ -1,4 +1,4 @@
-from src.model.layers import DenseLayer
+from model.layers import DenseLayer
 
 
 class SGD:

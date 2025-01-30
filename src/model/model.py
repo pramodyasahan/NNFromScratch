@@ -1,5 +1,5 @@
-from src.model.layers import DenseLayer
-from src.training.loss import CrossEntropyLoss
+from model.layers import DenseLayer
+from training.loss import CrossEntropyLoss
 
 
 class NeuralNetwork:
